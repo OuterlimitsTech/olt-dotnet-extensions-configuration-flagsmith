@@ -1,9 +1,9 @@
-name: "Build, Test, & Deploy"
+name: "CI"
 
 on:
   push:
     tags:
-      - "v*"
+      - "*.*.*"
 
 # on:
 #   push:
@@ -29,6 +29,7 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Get Version
+        id: version
         uses: battila7/get-version-action@v2.2.1
 
       - name: Restore dependencies
