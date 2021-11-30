@@ -28,9 +28,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
@@ -53,13 +50,31 @@ jobs:
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
-        shell: powershell
+      # - name: Build and analyze
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
+      #   shell: powershell
+      #   run: |
+      #     .\.sonar\scanner\dotnet-sonarscanner begin /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /o:"outerlimitstech" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+      #     dotnet test --no-build --verbosity normal
+      #     .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Sonarqube Begin
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /o:"outerlimitstech" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet test --no-build --verbosity normal
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet sonarscanner begin /o:"outerlimitstech" /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:$GITHUB_WORKSPACE/SonarQube.Analysis.xml
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test with the dotnet CLI
+        run: dotnet test --settings coverlet.runsettings --logger:trx
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+
+      - name: Sonarqube end
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
