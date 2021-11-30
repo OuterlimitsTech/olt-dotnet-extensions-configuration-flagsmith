@@ -9,6 +9,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+env:
+  SOURCE_DIRECTORY: ${{ github.workspace }}/src
+
 jobs:
   build:
     name: Build
@@ -25,13 +28,13 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ${{ SOURCE_DIRECTORY }}
 
       - name: Build
-        run: dotnet build --configuration "Release" --no-restore
+        run: dotnet build ${{ SOURCE_DIRECTORY }} --configuration "Release" --no-restore
 
       - name: Test
-        run: dotnet test --no-build --verbosity normal --no-restore --configuration "Release"
+        run: dotnet test ${{ SOURCE_DIRECTORY }} --no-build --verbosity normal --no-restore --configuration "Release"
         env:
           ASPNETCORE_ENVIRONMENT: Development
           FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
@@ -40,9 +43,11 @@ jobs:
         uses: highbyte/sonarscan-dotnet@v2.1.2
         with:
           sonarProjectKey: "OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith"
-          sonarProjectName: "OLT.Extensions.Configuration.Flagsmith.sln"
+          # sonarProjectName: "OLT.Extensions.Configuration.Flagsmith.sln"
+          sonarProjectName: "OLT.Extensions.Configuration.Flagsmith"
+          dotnetBuildArguments: ./src
           sonarOrganization: "outerlimitstech"
-          dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          dotnetTestArguments: ./src --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
 
         env:

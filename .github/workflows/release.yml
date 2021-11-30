@@ -14,6 +14,7 @@ on:
 
 env:
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
+  SOURCE_DIRECTORY: ${{ github.workspace }}/src
   NUGET_SOURCE_URL: "https://api.nuget.org/v3/index.json"
 
 jobs:
@@ -33,16 +34,16 @@ jobs:
         uses: battila7/get-version-action@v2.2.1
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ${{ SOURCE_DIRECTORY }}
 
       - name: Build
-        run: dotnet build --configuration Release -p:Version=${{ steps.version.outputs.version-without-v }} --no-restore
+        run: dotnet build ${{ SOURCE_DIRECTORY }} --configuration Release -p:Version=${{ steps.version.outputs.version-without-v }} --no-restore
 
       #     - name: Test
       #       run: dotnet test --no-build --verbosity normal
 
       - name: "Pack project"
-        run: dotnet pack --no-restore --no-build --configuration Release -p:PackageVersion=${{ steps.version.outputs.version-without-v }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+        run: dotnet pack ${{ SOURCE_DIRECTORY }} --no-restore --no-build --configuration Release -p:PackageVersion=${{ steps.version.outputs.version-without-v }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
 
       - name: "Push package"
         run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/**/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s ${{ env.NUGET_SOURCE_URL }}

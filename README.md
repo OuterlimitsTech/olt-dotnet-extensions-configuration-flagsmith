@@ -1,4 +1,4 @@
-[![CI](https://github.com/OuterlimitsTech/olt-dotnet-extensions-configuration-flagsmith/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/OuterlimitsTech/olt-dotnet-extensions-configuration-flagsmith/actions/workflows/build.yml) [![Nuget](https://img.shields.io/nuget/v/OLT.Extensions.Configuration.Flagsmith)](https://www.nuget.org/packages/OLT.Extensions.Configuration.Flagsmith)
+[![CI](https://github.com/OuterlimitsTech/olt-dotnet-extensions-configuration-flagsmith/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/OuterlimitsTech/olt-dotnet-extensions-configuration-flagsmith/actions/workflows/build.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith) [![Nuget](https://img.shields.io/nuget/v/OLT.Extensions.Configuration.Flagsmith)](https://www.nuget.org/packages/OLT.Extensions.Configuration.Flagsmith)
 
 ## .NET Core Configuration Extensions to build Flagsmith as a Configuration Provider
 
