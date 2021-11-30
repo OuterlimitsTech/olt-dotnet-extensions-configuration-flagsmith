@@ -31,6 +31,25 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: SonarScanner for .NET 6 with pull request decoration support
+        uses: highbyte/sonarscan-dotnet@v2.1.2
+        with:
+          # The key of the SonarQube project
+          sonarProjectKey: "OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith"
+          # The name of the SonarQube project
+          sonarProjectName: "OLT.Extensions.Configuration.Flagsmith.sln"
+          # The name of the SonarQube organization in SonarCloud. For hosted SonarQube, skip this setting.
+          sonarOrganization: "outerlimitstech"
+          # Optional command arguments to dotnet test
+          dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          # Optional extra command arguments the the SonarScanner 'begin' command
+          sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
+
       # - name: Cache SonarCloud packages
       #   uses: actions/cache@v1
       #   with:
@@ -64,8 +83,6 @@ jobs:
       #     dotnet test --no-build --verbosity normal
       #     .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
-
-
       # https://www.seeleycoder.com/blog/sonarqube-with-github-actions-and-net-core-5-x/
       # - name: Sonarqube Begin
       #   run: |
@@ -85,24 +102,3 @@ jobs:
       #   run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
-    - name: SonarScanner for .NET 6 with pull request decoration support
-      uses: highbyte/sonarscan-dotnet@v2.1.2
-      with:
-        # The key of the SonarQube project
-        sonarProjectKey: "OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith"
-        # The name of the SonarQube project
-        sonarProjectName:  "OLT.Extensions.Configuration.Flagsmith.sln"
-        # The name of the SonarQube organization in SonarCloud. For hosted SonarQube, skip this setting.
-        sonarOrganization: "outerlimitstech"
-        # Optional command arguments to dotnet test
-        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        # Optional extra command arguments the the SonarScanner 'begin' command
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
-        
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
