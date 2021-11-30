@@ -3,9 +3,12 @@ on:
   push:
     branches:
       - master
-      - feature
+      # - release/**
+      # - feature/**
+
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
     name: Build
@@ -28,27 +31,27 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v1
-        with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+      # - name: Cache SonarCloud packages
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: ~\sonar\cache
+      #     key: ${{ runner.os }}-sonar
+      #     restore-keys: ${{ runner.os }}-sonar
 
-      - name: Cache SonarCloud scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v1
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
+      # - name: Cache SonarCloud scanner
+      #   id: cache-sonar-scanner
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: .\.sonar\scanner
+      #     key: ${{ runner.os }}-sonar-scanner
+      #     restore-keys: ${{ runner.os }}-sonar-scanner
 
-      - name: Install SonarCloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
-        run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      # - name: Install SonarCloud scanner
+      #   if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      #   shell: powershell
+      #   run: |
+      #     New-Item -Path .\.sonar\scanner -ItemType Directory
+      #     dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
       # - name: Build and analyze
       #   env:
@@ -73,6 +76,7 @@ jobs:
         run: dotnet test --settings coverlet.runsettings --logger:trx
         env:
           ASPNETCORE_ENVIRONMENT: Development
+          FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
 
       - name: Sonarqube end
         run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
