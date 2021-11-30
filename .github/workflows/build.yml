@@ -64,22 +64,45 @@ jobs:
       #     dotnet test --no-build --verbosity normal
       #     .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
+
+
       # https://www.seeleycoder.com/blog/sonarqube-with-github-actions-and-net-core-5-x/
-      - name: Sonarqube Begin
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-          dotnet sonarscanner begin /o:"outerlimitstech" /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:${{ github.workspace }}/SonarQube.Analysis.xml
+      # - name: Sonarqube Begin
+      #   run: |
+      #     dotnet tool install --global dotnet-sonarscanner
+      #     dotnet sonarscanner begin /o:"outerlimitstech" /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:${{ github.workspace }}/SonarQube.Analysis.xml
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      # - name: Build
+      #   run: dotnet build --configuration Release --no-restore
 
-      - name: Test with the dotnet CLI
-        run: dotnet test  --no-build --verbosity normal --settings coverlet.runsettings --logger:trx
-        env:
-          ASPNETCORE_ENVIRONMENT: Development
-          FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
+      # - name: Test with the dotnet CLI
+      #   run: dotnet test  --no-build --verbosity normal --settings coverlet.runsettings --logger:trx
+      #   env:
+      #     ASPNETCORE_ENVIRONMENT: Development
+      #     FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
 
-      - name: Sonarqube end
-        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Sonarqube end
+      #   run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+    - name: SonarScanner for .NET 6 with pull request decoration support
+      uses: highbyte/sonarscan-dotnet@v2.1.2
+      with:
+        # The key of the SonarQube project
+        sonarProjectKey: "OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith"
+        # The name of the SonarQube project
+        sonarProjectName:  "OLT.Extensions.Configuration.Flagsmith.sln"
+        # The name of the SonarQube organization in SonarCloud. For hosted SonarQube, skip this setting.
+        sonarOrganization: "outerlimitstech"
+        # Optional command arguments to dotnet test
+        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        # Optional extra command arguments the the SonarScanner 'begin' command
+        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+        
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
