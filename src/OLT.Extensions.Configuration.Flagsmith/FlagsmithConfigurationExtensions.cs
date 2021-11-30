@@ -9,7 +9,6 @@ namespace OLT.Extensions.Configuration.Flagsmith
     {
         public static IConfigurationBuilder AddFlagsmith(this IConfigurationBuilder configuration, Action<FlagsmithConfigurationOptions> options)
         {
-            _ = options ?? throw new ArgumentNullException(nameof(options));
             var configOptions = new FlagsmithConfigurationOptions();
             options(configOptions);
             configuration.Add(new FlagsmithConfigurationSource(configOptions));

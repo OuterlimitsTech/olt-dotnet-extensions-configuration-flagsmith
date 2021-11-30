@@ -39,7 +39,7 @@ namespace OLT.Extensions.Configuration.Flagsmith
                 var regex = new Regex(@"\b[A-Z]", RegexOptions.IgnoreCase);
                 foreach (Flag flag in flags)
                 {
-                    if (flag.IsEnabled() || _source.Options.EnabledOnly == false)
+                    if (flag.IsEnabled() || !_source.Options.EnabledOnly)
                     {
                         var rawName = flag.GetFeature().GetName();
                         var name = rawName;

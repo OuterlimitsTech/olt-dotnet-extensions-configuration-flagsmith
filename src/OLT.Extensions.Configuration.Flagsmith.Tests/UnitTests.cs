@@ -28,14 +28,15 @@ namespace OLT.Extensions.Configuration.Flagsmith.Tests
             options.EnabledOnly = true;
             Assert.Equal(apiKey, options.EnvironmentKey);
             Assert.Equal(apiUrl, options.ApiUrl);
-            Assert.True(options.EnabledOnly);
-                        
+            Assert.True(options.EnabledOnly); 
+
         }
 
-        [Fact]
-        public void TestServer()
+        [Theory]
+        [InlineData(false, "Remote_JwtSecret", "Remote_ConfigValue1", "Remote_ConfigValue2")]
+        [InlineData(true, "Remote_JwtSecret", "Local_ConfigValue1", "Remote_ConfigValue2")]
+        public void TestServer(bool enabledOnly, string expectedJwt, string expectedConfig1, string expectedConfig2)
         {
-            var expected = "HelloKitty";
 
             var webBuilder = new WebHostBuilder();
             webBuilder
@@ -52,6 +53,7 @@ namespace OLT.Extensions.Configuration.Flagsmith.Tests
                     {
                         options.ApiUrl = config.GetValue<string>("Flagsmith:ApiUrl");
                         options.EnvironmentKey = base.ApiKey;
+                        options.EnabledOnly = enabledOnly;
                     });
                 })
                 .UseStartup<TestHostStartup>();
@@ -61,11 +63,16 @@ namespace OLT.Extensions.Configuration.Flagsmith.Tests
                 var options = server.Host.Services.GetService<IOptions<AppSettingsDto>>();
                 if (options != null)
                 {
-                    Assert.Equal(expected, options.Value.JwtSecret);
+                    Assert.Equal(expectedJwt, options.Value.JwtSecret);
+                    Assert.Equal(expectedConfig1, options.Value.ConfigValue1);
+                    Assert.Equal(expectedConfig2, options.Value.ConfigValue2);
                 }
 
             }
             
         }
+
+
+       
     }
 }
