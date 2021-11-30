@@ -1,7 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+		<Description>Allows developers to use Flagsmith flags as a configuration source</Description>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<ProjectGuid>b66fcb3a-62a1-478c-8fa1-da602b199b55</ProjectGuid>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
@@ -17,6 +20,13 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.21" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.21" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
