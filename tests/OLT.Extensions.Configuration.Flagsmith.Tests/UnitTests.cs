@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -12,7 +13,6 @@ namespace OLT.Extensions.Configuration.Flagsmith.Tests
         [Fact]
         public void TestConfig()
         {
-            var t = Environment.GetEnvironmentVariable("FLAGSMITH_API_KEY");
             var apiKey = Faker.Internet.UserName();
             var apiUrl = Faker.Internet.Url();
             var options = new FlagsmithConfigurationOptions(apiKey)
@@ -30,18 +30,13 @@ namespace OLT.Extensions.Configuration.Flagsmith.Tests
             Assert.Equal(apiUrl, options.ApiUrl);
             Assert.True(options.EnabledOnly);
                         
-            options = new FlagsmithConfigurationOptions(base.ApiKey)
-            {
-                ApiUrl = apiUrl,
-                EnabledOnly = false,
-            };
-
-            var x = options;
         }
 
         [Fact]
         public void TestServer()
         {
+            var expected = "HelloKitty";
+
             var webBuilder = new WebHostBuilder();
             webBuilder
                 .ConfigureAppConfiguration(builder =>
@@ -60,16 +55,17 @@ namespace OLT.Extensions.Configuration.Flagsmith.Tests
                     });
                 })
                 .UseStartup<TestHostStartup>();
+            
+            using (var server = new TestServer(webBuilder))
+            {                
+                var options = server.Host.Services.GetService<IOptions<AppSettingsDto>>();
+                if (options != null)
+                {
+                    Assert.Equal(expected, options.Value.JwtSecret);
+                }
 
-            var host = webBuilder.Build();
-
-            var options  = host.Services.GetService<IOptions<AppSettingsDto>>();
-            if (options != null)
-            {
-                var result = options.Value;
-            }            
-
-            Assert.True(true);
+            }
+            
         }
     }
 }
