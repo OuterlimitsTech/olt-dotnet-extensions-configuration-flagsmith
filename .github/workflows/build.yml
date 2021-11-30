@@ -64,10 +64,11 @@ jobs:
       #     dotnet test --no-build --verbosity normal
       #     .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
+      # https://www.seeleycoder.com/blog/sonarqube-with-github-actions-and-net-core-5-x/
       - name: Sonarqube Begin
         run: |
           dotnet tool install --global dotnet-sonarscanner
-          dotnet sonarscanner begin /o:"outerlimitstech" /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:$GITHUB_WORKSPACE/SonarQube.Analysis.xml
+          dotnet sonarscanner begin /o:"outerlimitstech" /k:"OuterlimitsTech_olt-dotnet-extensions-configuration-flagsmith" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:${{ github.workspace }}/SonarQube.Analysis.xml
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
