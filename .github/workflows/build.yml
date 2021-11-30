@@ -74,7 +74,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Test with the dotnet CLI
-        run: dotnet test --settings coverlet.runsettings --logger:trx
+        run: dotnet test  --no-build --verbosity normal --settings coverlet.runsettings --logger:trx
         env:
           ASPNETCORE_ENVIRONMENT: Development
           FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
