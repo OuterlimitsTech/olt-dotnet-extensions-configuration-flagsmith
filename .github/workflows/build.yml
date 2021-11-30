@@ -28,13 +28,13 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Restore dependencies
-        run: dotnet restore ${{ SOURCE_DIRECTORY }}
+        run: dotnet restore ${{ env.SOURCE_DIRECTORY }}
 
       - name: Build
-        run: dotnet build ${{ SOURCE_DIRECTORY }} --configuration "Release" --no-restore
+        run: dotnet build ${{ env.SOURCE_DIRECTORY }} --configuration "Release" --no-restore
 
       - name: Test
-        run: dotnet test ${{ SOURCE_DIRECTORY }} --no-build --verbosity normal --no-restore --configuration "Release"
+        run: dotnet test ${{ env.SOURCE_DIRECTORY }} --no-build --verbosity normal --no-restore --configuration "Release"
         env:
           ASPNETCORE_ENVIRONMENT: Development
           FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
